@@ -1,0 +1,2277 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r, include=FALSE}
+library(dplyr)
+library(psycho)
+library(reshape2)
+library(lmerTest)
+```
+
+```{r, include=FALSE}
+data <- read.csv("Caffeine_Study_Fin.csv") %>% mutate(Sleep=as.numeric(Sleep))
+
+data <- data %>% mutate(Caffeine = GROUP.2,TPE.cat = cut(data$TPE, c(0,10,14)), TPF.cat = cut(data$TPF, c(0,6.5,11)), TME.cat = cut(data$TME, c(0,9,12)), TMF.cat = cut(data$TMF, c(0,6,11))) %>% select(Subject, TPE.cat, TPF.cat, TME.cat, TMF.cat, Motivation2, Motivation3, Motivation4, Motivation5, Sleep,  DeltaSub3Attempts, DeltaSub7Attempts, DeltaMotivation, DeltaCptReact, DeltaConfusion, DeltaTension, DeltaAnxiety, DeltaVigor, DeltaFatigue, DeltaDepression, CPT1ReactionTime, CPT2ReactionTime, CPT3ReactionTime, CPT4ReactionTime, Bakan1PrimaryAvgReactionTime, Bakan2PrimaryAvgReactionTime, Bakan3PrimaryAvgReactionTime, Bakan4PrimaryAvgReactionTime, Bakan1SecondaryAvgReactionTime, Bakan2SecondaryAvgReactionTime, Bakan3SecondaryAvgReactionTime, Bakan4SecondaryAvgReactionTime, Bakan1TertiaryAvgReactionTime, Bakan2TertiaryAvgReactionTime, Bakan3TertiaryAvgReactionTime, Bakan4TertiaryAvgReactionTime, GROUP., GROUP.2, GROUP.3, Beverage, v,v2,v3,v4,v5,a,a2,a3,a4,a5,c,c2,c3,c4,c5,d,d2,d3,d4,d5,f,f2,f3,f4,f5,t,t2,t3,t4,t5, PE2, PE3, PE4, PE5, ME2, ME3, ME4, ME5, mentalfatigue, Mentalenergy, physicalfatigue, Physicalenergy, X.F2, MF3, MF4, MF5, PF2, PF3, PF4, PF5, Caffeine, Sub3attempts1, Sub3numberattempt2, Sub3numberattempt3, Sub3total4, Sub7total1, Sub7total2, Sub7total3, Sub7total4,Caffeine) %>% 
+  mutate(MF2 = X.F2, ME1 = Mentalenergy, MF1 = mentalfatigue, PE1 = Physicalenergy, PF1 = physicalfatigue, Sub3total1 = Sub3attempts1, Sub3total2 = Sub3numberattempt2, Sub3total3 = Sub3numberattempt3, a1=a, c1=c, d1=d) %>% filter(Beverage!=1)
+```
+
+
+```{r}
+table <- data.frame()
+```
+
+
+VIGOR:------------------------------------------------------------------------
+
+
+```{r}
+data <- mutate(data, v = as.numeric(as.factor(v)),v2 = as.numeric(as.factor(v2)),v3 = as.numeric(as.factor(v3)),v4 = as.numeric(as.factor(v4)),v5 = as.numeric(as.factor(v5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  mutate(TPE = TPE.cat) %>%
+  select(Subject, Caffeine,TPE, v,v2, v3,v4, v5) %>%
+  melt(id.vars=c("Subject","TPE",'Caffeine'),
+                       measure.vars=c("v2", 'v3'), #, 'v4', 'v5'),
+                       variable.name="Measure",
+                       value.name="Vigor")
+
+
+fit <- lmer(Vigor ~ TPE*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+
+table. <-data.frame("Factor"="TPE","Measure"="Vigor","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+
+
+table <- bind_rows(table,table.)
+
+
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Vigor","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Vigor","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+
+table <- bind_rows(table,table.)
+
+lsm <- ls_means(fit)
+plot(lsm)
+```
+
+```{r}
+data <- mutate(data, v = as.numeric(as.factor(v)),v2 = as.numeric(as.factor(v2)),v3 = as.numeric(as.factor(v3)),v4 = as.numeric(as.factor(v4)),v5 = as.numeric(as.factor(v5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, v,v2, v3,v4, v5) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("v2", 'v3'), #, 'v4', 'v5'),
+                       variable.name="Measure",
+                       value.name="Vigor")
+
+
+fit <- lmer(Vigor ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="Vigor","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Vigor","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="Vigor","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, v = as.numeric(as.factor(v)),v2 = as.numeric(as.factor(v2)),v3 = as.numeric(as.factor(v3)),v4 = as.numeric(as.factor(v4)),v5 = as.numeric(as.factor(v5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, v,v2, v3,v4, v5) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("v2", 'v3'), #, 'v4', 'v5'),
+                       variable.name="Measure",
+                       value.name="Vigor")
+
+
+fit <- lmer(Vigor ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="Vigor","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Vigor","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="Vigor","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+
+
+```
+
+```{r, echo=FALSE}
+data <- mutate(data, v = as.numeric(as.factor(v)),v2 = as.numeric(as.factor(v2)),v3 = as.numeric(as.factor(v3)),v4 = as.numeric(as.factor(v4)),v5 = as.numeric(as.factor(v5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, v,v2, v3,v4, v5) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("v2" ,'v3'), #'v4', 'v5'),
+                       variable.name="Measure",
+                       value.name="Vigor")
+
+
+fit <- lmer(Vigor ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="Vigor","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Vigor","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="Vigor","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+FATIGUE:------------------------------------------
+
+
+```{r}
+data <- mutate(data, f = as.numeric(as.factor(f)),f2 = as.numeric(as.factor(f2)),f3 = as.numeric(as.factor(f3)),f4 = as.numeric(as.factor(f4)),f5 = as.numeric(as.factor(f5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, f,f2, f3,f4, f5) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("f2", 'f3'), #, 'f4', 'f5'),
+                       variable.name="Measure",
+                       value.name="Fatigue")
+
+
+fit <- lmer(Fatigue ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="Fatigue","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Fatigue","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="Fatigue","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, f = as.numeric(as.factor(f)),f2 = as.numeric(as.factor(f2)),f3 = as.numeric(as.factor(f3)),f4 = as.numeric(as.factor(f4)),f5 = as.numeric(as.factor(f5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, f,f2, f3,f4, f5) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("f2", 'f3'), #, 'f4', 'f5'),
+                       variable.name="Measure",
+                       value.name="Fatigue")
+
+
+fit <- lmer(Fatigue ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="Fatigue","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Fatigue","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="Fatigue","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+
+```
+
+```{r}
+data <- mutate(data, f = as.numeric(as.factor(f)),f2 = as.numeric(as.factor(f2)),f3 = as.numeric(as.factor(f3)),f4 = as.numeric(as.factor(f4)),f5 = as.numeric(as.factor(f5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, f,f2, f3,f4, f5) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("f2", 'f3'), #, 'f4', 'f5'),
+                       variable.name="Measure",
+                       value.name="Fatigue")
+
+
+fit <- lmer(Fatigue ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="Fatigue","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Fatigue","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="Fatigue","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+
+```
+
+```{r, echo=FALSE}
+data <- mutate(data, f = as.numeric(as.factor(f)),f2 = as.numeric(as.factor(f2)),f3 = as.numeric(as.factor(f3)),f4 = as.numeric(as.factor(f4)),f5 = as.numeric(as.factor(f5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, f,f2, f3,f4, f5) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("f2" ,'f3'), #'f4', 'f5'),
+                       variable.name="Measure",
+                       value.name="Fatigue")
+
+
+fit <- lmer(Fatigue ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="Fatigue","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Fatigue","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="Fatigue","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+
+```
+
+
+Tension:--------------------
+
+
+```{r}
+data <- mutate(data, t = as.numeric(as.factor(t)),t2 = as.numeric(as.factor(t2)),t3 = as.numeric(as.factor(t3)),t4 = as.numeric(as.factor(t4)),t5 = as.numeric(as.factor(t5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, t,t2, t3,t4, t5) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("t2", 't3'), #, 't4', 't5'),
+                       variable.name="Measure",
+                       value.name="Tension")
+
+
+fit <- lmer(Tension ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="Tension","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Tension","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="Tension","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+
+```
+
+```{r}
+data <- mutate(data, t = as.numeric(as.factor(t)),t2 = as.numeric(as.factor(t2)),t3 = as.numeric(as.factor(t3)),t4 = as.numeric(as.factor(t4)),t5 = as.numeric(as.factor(t5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine), TPF=TPF.cat)
+datas <- data %>%
+  select(Subject, Caffeine,TPF, t,t2, t3,t4, t5) %>%
+  melt(id.vars=c("Subject","TPF",'Caffeine'),
+                       measure.vars=c("t2", 't3'), #, 't4', 't5'),
+                       variable.name="Measure",
+                       value.name="Tension")
+
+
+fit <- lmer(Tension ~ TPF*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="Tension","Beta"=model$Estimate[2],"Lower"=ests$lower[2]-ests$Estimate[1], "Upper"=ests$upper[2]-ests$Estimate[1], "t stat"=model$t.value[2],"t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Tension","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="Tension","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+lsm <- ls_means(fit)
+plot(lsm)
+```
+
+```{r}
+data <- mutate(data, t = as.numeric(as.factor(t)),t2 = as.numeric(as.factor(t2)),t3 = as.numeric(as.factor(t3)),t4 = as.numeric(as.factor(t4)),t5 = as.numeric(as.factor(t5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, t,t2, t3,t4, t5) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("t2", 't3'), #, 't4', 't5'),
+                       variable.name="Measure",
+                       value.name="Tension")
+
+
+fit <- lmer(Tension ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="Tension","Beta"=model$Estimate[2],"Lower"=ests$lower[2]-ests$Estimate[1], "Upper"=ests$upper[2]-ests$Estimate[1],"t stat"=model$t.value[2],"t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Tension","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="Tension","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+
+```
+
+```{r, echo=FALSE}
+data <- mutate(data, t = as.numeric(as.factor(t)),t2 = as.numeric(as.factor(t2)),t3 = as.numeric(as.factor(t3)),t4 = as.numeric(as.factor(t4)),t5 = as.numeric(as.factor(t5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, t,t2, t3,t4, t5) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("t2" ,'t3'), #'t4', 't5'),
+                       variable.name="Measure",
+                       value.name="Tension")
+
+
+fit <- lmer(Tension ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="Tension","Beta"=model$Estimate[2],"Lower"=ests$lower[2]-ests$Estimate[1], "Upper"=ests$upper[2]-ests$Estimate[1],"t stat"=model$t.value[2],"t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Tension","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="Tension","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+
+Need anger, depression, & confusion
+
+anger
+```{r}
+data <- mutate(data, a1 = as.numeric(as.factor(a1)),a2 = as.numeric(as.factor(a2)),a3 = as.numeric(as.factor(a3)),a4 = as.numeric(as.factor(a4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, a1,a2, a3,a4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("a1", 'a2'), #, 'a4', 'a5'),
+                       variable.name="Measure",
+                       value.name="a")
+
+
+fit <- lmer(a ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="a","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="a","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="a","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, a1 = as.numeric(as.factor(a1)),a2 = as.numeric(as.factor(a2)),a3 = as.numeric(as.factor(a3)),a4 = as.numeric(as.factor(a4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, a1,a2, a3,a4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("a1", 'a2'), #, 'a4', 'a5'),
+                       variable.name="Measure",
+                       value.name="a")
+
+
+fit <- lmer(a ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="a","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="a","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="a","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, a1 = as.numeric(as.factor(a1)),a2 = as.numeric(as.factor(a2)),a3 = as.numeric(as.factor(a3)),a4 = as.numeric(as.factor(a4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, a1,a2, a3,a4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("a1", 'a2'), #, 'a4', 'a5'),
+                       variable.name="Measure",
+                       value.name="a")
+
+
+fit <- lmer(a ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="a","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="a","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="a","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, a1 = as.numeric(as.factor(a1)),a2 = as.numeric(as.factor(a2)),a3 = as.numeric(as.factor(a3)),a4 = as.numeric(as.factor(a4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, a1,a2, a3,a4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("a1", 'a2'), #, 'a4', 'a5'),
+                       variable.name="Measure",
+                       value.name="a")
+
+
+fit <- lmer(a ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="a","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="a","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="a","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+depression
+
+```{r}
+data <- mutate(data, d1 = as.numeric(as.factor(d1)),d2 = as.numeric(as.factor(d2)),d3 = as.numeric(as.factor(d3)),d4 = as.numeric(as.factor(d4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, d1,d2, d3,d4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("d1", 'd2'), #, 'd4', 'd5'),
+                       variable.name="Measure",
+                       value.name="d")
+
+
+fit <- lmer(d ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="d","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="d","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="d","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, d1 = as.numeric(as.factor(d1)),d2 = as.numeric(as.factor(d2)),d3 = as.numeric(as.factor(d3)),d4 = as.numeric(as.factor(d4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, d1,d2, d3,d4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("d1", 'd2'), #, 'd4', 'd5'),
+                       variable.name="Measure",
+                       value.name="d")
+
+
+fit <- lmer(d ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="d","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="d","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="d","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, d1 = as.numeric(as.factor(d1)),d2 = as.numeric(as.factor(d2)),d3 = as.numeric(as.factor(d3)),d4 = as.numeric(as.factor(d4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, d1,d2, d3,d4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("d1", 'd2'), #, 'd4', 'd5'),
+                       variable.name="Measure",
+                       value.name="d")
+
+
+fit <- lmer(d ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="d","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="d","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="d","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, d1 = as.numeric(as.factor(d1)),d2 = as.numeric(as.factor(d2)),d3 = as.numeric(as.factor(d3)),d4 = as.numeric(as.factor(d4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, d1,d2, d3,d4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("d1", 'd2'), #, 'd4', 'd5'),
+                       variable.name="Measure",
+                       value.name="d")
+
+
+fit <- lmer(d ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="d","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="d","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="d","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+confusion
+```{r}
+data <- mutate(data, c1 = as.numeric(as.factor(c1)),c2 = as.numeric(as.factor(c2)),c3 = as.numeric(as.factor(c3)),c4 = as.numeric(as.factor(c4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, c1,c2, c3,c4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("c1", 'c2'), #, 'c4', 'c5'),
+                       variable.name="Measure",
+                       value.name="c")
+
+
+fit <- lmer(c ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="c","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="c","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="c","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, c1 = as.numeric(as.factor(c1)),c2 = as.numeric(as.factor(c2)),c3 = as.numeric(as.factor(c3)),c4 = as.numeric(as.factor(c4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, c1,c2, c3,c4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("c1", 'c2'), #, 'c4', 'c5'),
+                       variable.name="Measure",
+                       value.name="c")
+
+
+fit <- lmer(c ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="c","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="c","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="c","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, c1 = as.numeric(as.factor(c1)),c2 = as.numeric(as.factor(c2)),c3 = as.numeric(as.factor(c3)),c4 = as.numeric(as.factor(c4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, c1,c2, c3,c4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("c1", 'c2'), #, 'c4', 'c5'),
+                       variable.name="Measure",
+                       value.name="c")
+
+
+fit <- lmer(c ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="c","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="c","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="c","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, c1 = as.numeric(as.factor(c1)),c2 = as.numeric(as.factor(c2)),c3 = as.numeric(as.factor(c3)),c4 = as.numeric(as.factor(c4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, c1,c2, c3,c4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("c1", 'c2'), #, 'c4', 'c5'),
+                       variable.name="Measure",
+                       value.name="c")
+
+
+fit <- lmer(c ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="c","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="c","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="c","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+motivation
+```{r}
+data <- mutate(data,Motivation2 = as.numeric(as.factor(Motivation2)),Motivation3 = as.numeric(as.factor(Motivation3)),Motivation4 = as.numeric(as.factor(Motivation4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat,Motivation2, Motivation3,Motivation4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("Motivation2", 'Motivation3'), #, 'Motivation4', 'Motivation5'),
+                       variable.name="Measure",
+                       value.name="Motivation")
+
+
+fit <- lmer(Motivation ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="Motivation","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Motivation","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="Motivation","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, Motivation2 = as.numeric(as.factor(Motivation2)),Motivation3 = as.numeric(as.factor(Motivation3)),Motivation4 = as.numeric(as.factor(Motivation4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat,Motivation2, Motivation3,Motivation4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("Motivation2", 'Motivation3'), #, 'Motivation4', 'Motivation5'),
+                       variable.name="Measure",
+                       value.name="Motivation")
+
+
+fit <- lmer(Motivation ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="Motivation","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Motivation","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="Motivation","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, Motivation2 = as.numeric(as.factor(Motivation2)),Motivation3 = as.numeric(as.factor(Motivation3)),Motivation4 = as.numeric(as.factor(Motivation4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, Motivation2, Motivation3,Motivation4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("Motivation2", 'Motivation3'), #, 'Motivation4', 'Motivation5'),
+                       variable.name="Measure",
+                       value.name="Motivation")
+
+
+fit <- lmer(Motivation ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="Motivation","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Motivation","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="Motivation","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data,Motivation2 = as.numeric(as.factor(Motivation2)),Motivation3 = as.numeric(as.factor(Motivation3)),Motivation4 = as.numeric(as.factor(Motivation4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat,Motivation2, Motivation3,Motivation4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("Motivation2", 'Motivation3'), #, 'Motivation4', 'Motivation5'),
+                       variable.name="Measure",
+                       value.name="Motivation")
+
+
+fit <- lmer(Motivation ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="Motivation","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Motivation","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="Motivation","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+
+
+States------------------------------------------------
+
+
+```{r, include=FALSE}
+data <- read.csv("Caffeine_Study_Fin.csv") %>% mutate(Sleep=as.numeric(Sleep))
+
+data <- data %>% mutate(Caffeine = GROUP.2,TPE.cat = cut(data$TPE, c(0,10,14)), TPF.cat = cut(data$TPF, c(0,6.5,11)), TME.cat = cut(data$TME, c(0,9,12)), TMF.cat = cut(data$TMF, c(0,6,11))) %>% select(Subject, TPE.cat, TPF.cat, TME.cat, TMF.cat, Motivation2, Motivation3, Motivation4, Motivation5, Sleep,  DeltaSub3Attempts, DeltaSub7Attempts, DeltaMotivation, DeltaCptReact, DeltaConfusion, DeltaTension, DeltaAnxiety, DeltaVigor, DeltaFatigue, DeltaDepression, CPT1ReactionTime, CPT2ReactionTime, CPT3ReactionTime, CPT4ReactionTime, Bakan1PrimaryAvgReactionTime, Bakan2PrimaryAvgReactionTime, Bakan3PrimaryAvgReactionTime, Bakan4PrimaryAvgReactionTime, Bakan1SecondaryAvgReactionTime, Bakan2SecondaryAvgReactionTime, Bakan3SecondaryAvgReactionTime, Bakan4SecondaryAvgReactionTime, Bakan1TertiaryAvgReactionTime, Bakan2TertiaryAvgReactionTime, Bakan3TertiaryAvgReactionTime, Bakan4TertiaryAvgReactionTime, GROUP., GROUP.2, GROUP.3, Beverage, v,v2,v3,v4,v5,a,a2,a3,a4,a5,c,c2,c3,c4,c5,d,d2,d3,d4,d5,f,f2,f3,f4,f5,t,t2,t3,t4,t5, PE2, PE3, PE4, PE5, ME2, ME3, ME4, ME5, mentalfatigue, Mentalenergy, physicalfatigue, Physicalenergy, X.F2, MF3, MF4, MF5, PF2, PF3, PF4, PF5, Caffeine, Sub3attempts1, Sub3numberattempt2, Sub3numberattempt3, Sub3total4, Sub7total1, Sub7total2, Sub7total3, Sub7total4,Caffeine) %>% 
+  mutate(MF2 = X.F2, ME = Mentalenergy, MF = mentalfatigue, PE = Physicalenergy, PF = physicalfatigue, Sub3total1 = Sub3attempts1, Sub3total2 = Sub3numberattempt2, Sub3total3 = Sub3numberattempt3) %>% filter(Beverage != 1)
+```
+
+
+
+
+TPE----------------------------------
+
+
+
+```{r}
+data <- mutate(data, PE = as.numeric(as.factor(PE)),PE2 = as.numeric(as.factor(PE2)),PE3 = as.numeric(as.factor(PE3)),PE4 = as.numeric(as.factor(PE4)),PE5 = as.numeric(as.factor(PE5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, PE,PE2, PE3,PE4, PE5) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("PE2", 'PE3'), #, 'PE4', 'PE5'),
+                       variable.name="Measure",
+                       value.name="PE")
+
+
+fit <- lmer(PE ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="PE","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="PE","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="PE","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, PE = as.numeric(as.factor(PE)),PE2 = as.numeric(as.factor(PE2)),PE3 = as.numeric(as.factor(PE3)),PE4 = as.numeric(as.factor(PE4)),PE5 = as.numeric(as.factor(PE5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, PE,PE2, PE3,PE4, PE5) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("PE2", 'PE3'), #, 'PE4', 'PE5'),
+                       variable.name="Measure",
+                       value.name="PE")
+
+
+fit <- lmer(PE ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="PE","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="PE","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="PE","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, PE = as.numeric(as.factor(PE)),PE2 = as.numeric(as.factor(PE2)),PE3 = as.numeric(as.factor(PE3)),PE4 = as.numeric(as.factor(PE4)),PE5 = as.numeric(as.factor(PE5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, PE,PE2, PE3,PE4, PE5) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("PE2", 'PE3'), #, 'PE4', 'PE5'),
+                       variable.name="Measure",
+                       value.name="PE")
+
+
+fit <- lmer(PE ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="PE","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="PE","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="PE","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r, echo=FALSE}
+data <- mutate(data, PE = as.numeric(as.factor(PE)),PE2 = as.numeric(as.factor(PE2)),PE3 = as.numeric(as.factor(PE3)),PE4 = as.numeric(as.factor(PE4)),PE5 = as.numeric(as.factor(PE5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, PE,PE2, PE3,PE4, PE5) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("PE2" ,'PE3'), #'PE4', 'PE5'),
+                       variable.name="Measure",
+                       value.name="PE")
+
+
+fit <- lmer(PE ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="PE","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="PE","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="PE","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+
+TPF-------------------------------------
+
+
+
+
+
+
+
+```{r}
+data <- mutate(data, PF = as.numeric(as.factor(PF)),PF2 = as.numeric(as.factor(PF2)),PF3 = as.numeric(as.factor(PF3)),PF4 = as.numeric(as.factor(PF4)),PF5 = as.numeric(as.factor(PF5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, PF,PF2, PF3,PF4, PF5) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("PF2", 'PF3'), #, 'PF4', 'PF5'),
+                       variable.name="Measure",
+                       value.name="PF")
+
+
+fit <- lmer(PF ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="PF","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="PF","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="PF","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, PF = as.numeric(as.factor(PF)),PF2 = as.numeric(as.factor(PF2)),PF3 = as.numeric(as.factor(PF3)),PF4 = as.numeric(as.factor(PF4)),PF5 = as.numeric(as.factor(PF5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, PF,PF2, PF3,PF4, PF5) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("PF2", 'PF3'), #, 'PF4', 'PF5'),
+                       variable.name="Measure",
+                       value.name="PF")
+
+
+fit <- lmer(PF ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="PF","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="PF","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="PF","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, PF = as.numeric(as.factor(PF)),PF2 = as.numeric(as.factor(PF2)),PF3 = as.numeric(as.factor(PF3)),PF4 = as.numeric(as.factor(PF4)),PF5 = as.numeric(as.factor(PF5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, PF,PF2, PF3,PF4, PF5) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("PF2", 'PF3'), #, 'PF4', 'PF5'),
+                       variable.name="Measure",
+                       value.name="PF")
+
+
+fit <- lmer(PF ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="PF","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="PF","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="PF","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+
+
+```
+
+```{r, echo=FALSE}
+data <- mutate(data, PF = as.numeric(as.factor(PF)),PF2 = as.numeric(as.factor(PF2)),PF3 = as.numeric(as.factor(PF3)),PF4 = as.numeric(as.factor(PF4)),PF5 = as.numeric(as.factor(PF5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, PF,PF2, PF3,PF4, PF5) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("PF2" ,'PF3'), #'PF4', 'PF5'),
+                       variable.name="Measure",
+                       value.name="PF")
+
+
+fit <- lmer(PF ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="PF","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="PF","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="PF","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+TME------------------------------------------
+
+
+```{r}
+data <- mutate(data, ME = as.numeric(as.factor(ME)),ME2 = as.numeric(as.factor(ME2)),ME3 = as.numeric(as.factor(ME3)),ME4 = as.numeric(as.factor(ME4)),ME5 = as.numeric(as.factor(ME5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, ME,ME2, ME3,ME4, ME5) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("ME2", 'ME3'), #, 'ME4', 'ME5'),
+                       variable.name="Measure",
+                       value.name="ME")
+
+
+fit <- lmer(ME ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="ME","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="ME","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="ME","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, ME = as.numeric(as.factor(ME)),ME2 = as.numeric(as.factor(ME2)),ME3 = as.numeric(as.factor(ME3)),ME4 = as.numeric(as.factor(ME4)),ME5 = as.numeric(as.factor(ME5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, ME,ME2, ME3,ME4, ME5) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("ME2", 'ME3'), #, 'ME4', 'ME5'),
+                       variable.name="Measure",
+                       value.name="ME")
+
+
+fit <- lmer(ME ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="ME","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+table. <-data.frame("Factor"="Caffeine","Measure"="ME","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="ME","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, ME = as.numeric(as.factor(ME)),ME2 = as.numeric(as.factor(ME2)),ME3 = as.numeric(as.factor(ME3)),ME4 = as.numeric(as.factor(ME4)),ME5 = as.numeric(as.factor(ME5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, ME,ME2, ME3,ME4, ME5) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("ME2", 'ME3'), #, 'ME4', 'ME5'),
+                       variable.name="Measure",
+                       value.name="ME")
+
+
+fit <- lmer(ME ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="ME","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="ME","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="ME","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r, echo=FALSE}
+data <- mutate(data, ME = as.numeric(as.factor(ME)),ME2 = as.numeric(as.factor(ME2)),ME3 = as.numeric(as.factor(ME3)),ME4 = as.numeric(as.factor(ME4)),ME5 = as.numeric(as.factor(ME5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, ME,ME2, ME3,ME4, ME5) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("ME2" ,'ME3'), #'ME4', 'ME5'),
+                       variable.name="Measure",
+                       value.name="ME")
+
+
+fit <- lmer(ME ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="ME","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="ME","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="ME","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+TMF-----------------------------------------------
+
+
+
+```{r}
+data <- mutate(data, MF = as.numeric(as.factor(MF)),MF2 = as.numeric(as.factor(MF2)),MF3 = as.numeric(as.factor(MF3)),MF4 = as.numeric(as.factor(MF4)),MF5 = as.numeric(as.factor(MF5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, MF,MF2, MF3,MF4, MF5) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("MF2", 'MF3'), #, 'MF4', 'MF5'),
+                       variable.name="Measure",
+                       value.name="MF")
+
+
+fit <- lmer(MF ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="MF","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="MF","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="MF","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, MF = as.numeric(as.factor(MF)),MF2 = as.numeric(as.factor(MF2)),MF3 = as.numeric(as.factor(MF3)),MF4 = as.numeric(as.factor(MF4)),MF5 = as.numeric(as.factor(MF5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, MF,MF2, MF3,MF4, MF5) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("MF2", 'MF3'), #, 'MF4', 'MF5'),
+                       variable.name="Measure",
+                       value.name="MF")
+
+
+fit <- lmer(MF ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="MF","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="MF","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="MF","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, MF = as.numeric(as.factor(MF)),MF2 = as.numeric(as.factor(MF2)),MF3 = as.numeric(as.factor(MF3)),MF4 = as.numeric(as.factor(MF4)),MF5 = as.numeric(as.factor(MF5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, MF,MF2, MF3,MF4, MF5) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("MF2", 'MF3'), #, 'MF4', 'MF5'),
+                       variable.name="Measure",
+                       value.name="MF")
+
+
+fit <- lmer(MF ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="MF","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="MF","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="MF","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+lsm <- ls_means(fit)
+plot(lsm)
+```
+
+```{r, echo=FALSE}
+data <- mutate(data, MF = as.numeric(as.factor(MF)),MF2 = as.numeric(as.factor(MF2)),MF3 = as.numeric(as.factor(MF3)),MF4 = as.numeric(as.factor(MF4)),MF5 = as.numeric(as.factor(MF5)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, MF,MF2, MF3,MF4, MF5) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("MF2" ,'MF3'), #'MF4', 'MF5'),
+                       variable.name="Measure",
+                       value.name="MF")
+
+
+fit <- lmer(MF ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="MF","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="MF","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="MF","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+```{r, include=FALSE}
+data <- read.csv("Caffeine_Study_Fin.csv") %>% mutate(Sleep=as.numeric(Sleep))
+
+data <- data %>% mutate(Caffeine = GROUP.2,TPE.cat = cut(data$TPE, c(0,10,14)), TPF.cat = cut(data$TPF, c(0,6.5,11)), TME.cat = cut(data$TME, c(0,9,12)), TMF.cat = cut(data$TMF, c(0,6,11))) %>% select(Subject, TPE.cat, TPF.cat, TME.cat, TMF.cat, Motivation2, Motivation3, Motivation4, Motivation5, Sleep,  DeltaSub3Attempts, DeltaSub7Attempts, DeltaMotivation, DeltaCptReact, DeltaConfusion, DeltaTension, DeltaAnxiety, DeltaVigor, DeltaFatigue, DeltaDepression, CPT1ReactionTime, CPT2ReactionTime, CPT3ReactionTime, CPT4ReactionTime, Bakan1PrimaryAvgReactionTime, Bakan2PrimaryAvgReactionTime, Bakan3PrimaryAvgReactionTime, Bakan4PrimaryAvgReactionTime, Bakan1SecondaryAvgReactionTime, Bakan2SecondaryAvgReactionTime, Bakan3SecondaryAvgReactionTime, Bakan4SecondaryAvgReactionTime, Bakan1TertiaryAvgReactionTime, Bakan2TertiaryAvgReactionTime, Bakan3TertiaryAvgReactionTime, Bakan4TertiaryAvgReactionTime, GROUP., GROUP.2, GROUP.3, Beverage, v,v2,v3,v4,v5,a,a2,a3,a4,a5,c,c2,c3,c4,c5,d,d2,d3,d4,d5,f,f2,f3,f4,f5,t,t2,t3,t4,t5, PE2, PE3, PE4, PE5, ME2, ME3, ME4, ME5, mentalfatigue, Mentalenergy, physicalfatigue, Physicalenergy, X.F2, MF3, MF4, MF5, PF2, PF3, PF4, PF5, Caffeine, Sub3attempts1, Sub3numberattempt2, Sub3numberattempt3, Sub3total4, Sub7total1, Sub7total2, Sub7total3, Sub7total4, SYS1,SYS2,SYS3,SYS4,DIA1,DIA2,DIA3,DIA4,HR1,HR2,HR3,HR4,RHavg1,RHavg2,RHavg3,RHavg4, LHavg1,LHavg2,LHavg3,LHavg4,Caffeine) %>% 
+  mutate(MF2 = X.F2, ME = Mentalenergy, MF = mentalfatigue, PE = Physicalenergy, PF = physicalfatigue, Sub3total1 = Sub3attempts1, Sub3total2 = Sub3numberattempt2, Sub3total3 = Sub3numberattempt3) %>% filter(Beverage != 1)
+```
+
+
+
+
+sub3
+
+
+```{r}
+data <- mutate(data, Sub3total1 = as.numeric(as.factor(Sub3total1)),Sub3total2 = as.numeric(as.factor(Sub3total2)),Sub3total3 = as.numeric(as.factor(Sub3total3)),Sub3total4 = as.numeric(as.factor(Sub3total4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, Sub3total1,Sub3total2, Sub3total3,Sub3total4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("Sub3total1", 'Sub3total2'), #, 'Sub3total4', 'Sub3total5'),
+                       variable.name="Measure",
+                       value.name="Sub3total")
+
+
+fit <- lmer(Sub3total ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="Sub3total","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Sub3total","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="Sub3total","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, Sub3total1 = as.numeric(as.factor(Sub3total1)),Sub3total2 = as.numeric(as.factor(Sub3total2)),Sub3total3 = as.numeric(as.factor(Sub3total3)),Sub3total4 = as.numeric(as.factor(Sub3total4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, Sub3total1,Sub3total2, Sub3total3,Sub3total4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("Sub3total1", 'Sub3total2'), #, 'Sub3total4', 'Sub3total5'),
+                       variable.name="Measure",
+                       value.name="Sub3total")
+
+
+fit <- lmer(Sub3total ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="Sub3total","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Sub3total","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="Sub3total","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, Sub3total1 = as.numeric(as.factor(Sub3total1)),Sub3total2 = as.numeric(as.factor(Sub3total2)),Sub3total3 = as.numeric(as.factor(Sub3total3)),Sub3total4 = as.numeric(as.factor(Sub3total4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, Sub3total1,Sub3total2, Sub3total3,Sub3total4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("Sub3total1", 'Sub3total2'), #, 'Sub3total4', 'Sub3total5'),
+                       variable.name="Measure",
+                       value.name="Sub3total")
+
+
+fit <- lmer(Sub3total ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="Sub3total","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Sub3total","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="Sub3total","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, Sub3total1 = as.numeric(as.factor(Sub3total1)),Sub3total2 = as.numeric(as.factor(Sub3total2)),Sub3total3 = as.numeric(as.factor(Sub3total3)),Sub3total4 = as.numeric(as.factor(Sub3total4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, Sub3total1,Sub3total2, Sub3total3,Sub3total4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("Sub3total1", 'Sub3total2'), #, 'Sub3total4', 'Sub3total5'),
+                       variable.name="Measure",
+                       value.name="Sub3total")
+
+
+fit <- lmer(Sub3total ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="Sub3total","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Sub3total","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="Sub3total","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+sub7
+
+```{r}
+data <- mutate(data, Sub7total1 = as.numeric(as.factor(Sub7total1)),Sub7total2 = as.numeric(as.factor(Sub7total2)),Sub7total3 = as.numeric(as.factor(Sub7total3)),Sub7total4 = as.numeric(as.factor(Sub7total4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, Sub7total1,Sub7total2, Sub7total3,Sub7total4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("Sub7total1", 'Sub7total2'), #, 'Sub7total4', 'Sub7total5'),
+                       variable.name="Measure",
+                       value.name="Sub7total")
+
+
+fit <- lmer(Sub7total ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="Sub7total","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Sub7total","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="Sub7total","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, Sub7total1 = as.numeric(as.factor(Sub7total1)),Sub7total2 = as.numeric(as.factor(Sub7total2)),Sub7total3 = as.numeric(as.factor(Sub7total3)),Sub7total4 = as.numeric(as.factor(Sub7total4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, Sub7total1,Sub7total2, Sub7total3,Sub7total4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("Sub7total1", 'Sub7total2'), #, 'Sub7total4', 'Sub7total5'),
+                       variable.name="Measure",
+                       value.name="Sub7total")
+
+
+fit <- lmer(Sub7total ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="Sub7total","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Sub7total","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="Sub7total","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, Sub7total1 = as.numeric(as.factor(Sub7total1)),Sub7total2 = as.numeric(as.factor(Sub7total2)),Sub7total3 = as.numeric(as.factor(Sub7total3)),Sub7total4 = as.numeric(as.factor(Sub7total4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, Sub7total1,Sub7total2, Sub7total3,Sub7total4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("Sub7total1", 'Sub7total2'), #, 'Sub7total4', 'Sub7total5'),
+                       variable.name="Measure",
+                       value.name="Sub7total")
+
+
+fit <- lmer(Sub7total ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="Sub7total","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Sub7total","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="Sub7total","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, Sub7total1 = as.numeric(as.factor(Sub7total1)),Sub7total2 = as.numeric(as.factor(Sub7total2)),Sub7total3 = as.numeric(as.factor(Sub7total3)),Sub7total4 = as.numeric(as.factor(Sub7total4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, Sub7total1,Sub7total2, Sub7total3,Sub7total4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("Sub7total1", 'Sub7total2'), #, 'Sub7total4', 'Sub7total5'),
+                       variable.name="Measure",
+                       value.name="Sub7total")
+
+
+fit <- lmer(Sub7total ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="Sub7total","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="Sub7total","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="Sub7total","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+SYS
+
+```{r}
+data <- mutate(data, SYS1 = as.numeric(as.factor(SYS1)),SYS2 = as.numeric(as.factor(SYS2)),SYS3 = as.numeric(as.factor(SYS3)),SYS4 = as.numeric(as.factor(SYS4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, SYS1,SYS2, SYS3,SYS4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("SYS1", 'SYS2'), #, 'SYS4', 'SYS5'),
+                       variable.name="Measure",
+                       value.name="SYS")
+
+
+fit <- lmer(SYS ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="SYS","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+
+table. <-data.frame("Factor"="Caffeine","Measure"="SYS","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="SYS","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, SYS1 = as.numeric(as.factor(SYS1)),SYS2 = as.numeric(as.factor(SYS2)),SYS3 = as.numeric(as.factor(SYS3)),SYS4 = as.numeric(as.factor(SYS4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, SYS1,SYS2, SYS3,SYS4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("SYS1", 'SYS2'), #, 'SYS4', 'SYS5'),
+                       variable.name="Measure",
+                       value.name="SYS")
+
+
+fit <- lmer(SYS ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="SYS","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="SYS","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="SYS","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, SYS1 = as.numeric(as.factor(SYS1)),SYS2 = as.numeric(as.factor(SYS2)),SYS3 = as.numeric(as.factor(SYS3)),SYS4 = as.numeric(as.factor(SYS4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, SYS1,SYS2, SYS3,SYS4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("SYS1", 'SYS2'), #, 'SYS4', 'SYS5'),
+                       variable.name="Measure",
+                       value.name="SYS")
+
+
+fit <- lmer(SYS ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="SYS","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="SYS","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="SYS","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, SYS1 = as.numeric(as.factor(SYS1)),SYS2 = as.numeric(as.factor(SYS2)),SYS3 = as.numeric(as.factor(SYS3)),SYS4 = as.numeric(as.factor(SYS4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, SYS1,SYS2, SYS3,SYS4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("SYS1", 'SYS2'), #, 'SYS4', 'SYS5'),
+                       variable.name="Measure",
+                       value.name="SYS")
+
+
+fit <- lmer(SYS ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="SYS","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="SYS","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="SYS","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+
+DIA
+
+```{r}
+data <- mutate(data, DIA1 = as.numeric(as.factor(DIA1)),DIA2 = as.numeric(as.factor(DIA2)),DIA3 = as.numeric(as.factor(DIA3)),DIA4 = as.numeric(as.factor(DIA4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, DIA1,DIA2, DIA3,DIA4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("DIA1", 'DIA2'), #, 'DIA4', 'DIA5'),
+                       variable.name="Measure",
+                       value.name="DIA")
+
+
+fit <- lmer(DIA ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="DIA","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+
+table. <-data.frame("Factor"="Caffeine","Measure"="DIA","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="DIA","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, DIA1 = as.numeric(as.factor(DIA1)),DIA2 = as.numeric(as.factor(DIA2)),DIA3 = as.numeric(as.factor(DIA3)),DIA4 = as.numeric(as.factor(DIA4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, DIA1,DIA2, DIA3,DIA4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("DIA1", 'DIA2'), #, 'DIA4', 'DIA5'),
+                       variable.name="Measure",
+                       value.name="DIA")
+
+
+fit <- lmer(DIA ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="DIA","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="DIA","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="DIA","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, DIA1 = as.numeric(as.factor(DIA1)),DIA2 = as.numeric(as.factor(DIA2)),DIA3 = as.numeric(as.factor(DIA3)),DIA4 = as.numeric(as.factor(DIA4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, DIA1,DIA2, DIA3,DIA4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("DIA1", 'DIA2'), #, 'DIA4', 'DIA5'),
+                       variable.name="Measure",
+                       value.name="DIA")
+
+
+fit <- lmer(DIA ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="DIA","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="DIA","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="DIA","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, DIA1 = as.numeric(as.factor(DIA1)),DIA2 = as.numeric(as.factor(DIA2)),DIA3 = as.numeric(as.factor(DIA3)),DIA4 = as.numeric(as.factor(DIA4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, DIA1,DIA2, DIA3,DIA4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("DIA1", 'DIA2'), #, 'DIA4', 'DIA5'),
+                       variable.name="Measure",
+                       value.name="DIA")
+
+
+fit <- lmer(DIA ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="DIA","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="DIA","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="DIA","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+HR
+
+```{r}
+data <- mutate(data, HR1 = as.numeric(as.factor(HR1)),HR2 = as.numeric(as.factor(HR2)),HR3 = as.numeric(as.factor(HR3)),HR4 = as.numeric(as.factor(HR4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, HR1,HR2, HR3,HR4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("HR1", 'HR2'), #, 'HR4', 'HR5'),
+                       variable.name="Measure",
+                       value.name="HR")
+
+
+fit <- lmer(HR ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="HR","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+
+table. <-data.frame("Factor"="Caffeine","Measure"="HR","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="HR","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, HR1 = as.numeric(as.factor(HR1)),HR2 = as.numeric(as.factor(HR2)),HR3 = as.numeric(as.factor(HR3)),HR4 = as.numeric(as.factor(HR4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, HR1,HR2, HR3,HR4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("HR1",'HR2'), #, 'HR4', 'HR5'),
+                       variable.name="Measure",
+                       value.name="HR")
+
+
+fit <- lmer(HR ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="HR","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="HR","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="HR","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, HR1 = as.numeric(as.factor(HR1)),HR2 = as.numeric(as.factor(HR2)),HR3 = as.numeric(as.factor(HR3)),HR4 = as.numeric(as.factor(HR4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, HR1,HR2, HR3,HR4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("HR1", 'HR2'), #, 'HR4', 'HR5'),
+                       variable.name="Measure",
+                       value.name="HR")
+
+
+fit <- lmer(HR ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="HR","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="HR","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="HR","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, HR1 = as.numeric(as.factor(HR1)),HR2 = as.numeric(as.factor(HR2)),HR3 = as.numeric(as.factor(HR3)),HR4 = as.numeric(as.factor(HR4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, HR1,HR2, HR3,HR4) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("HR1", 'HR2'), #, 'HR4', 'HR5'),
+                       variable.name="Measure",
+                       value.name="HR")
+
+
+fit <- lmer(HR ~ TMF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="HR","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="HR","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="HR","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+
+
+
+
+RHavg
+
+```{r}
+data <- mutate(data, RHavg1 = as.numeric(as.factor(RHavg1)),RHavg2 = as.numeric(as.factor(RHavg2)),RHavg3 = as.numeric(as.factor(RHavg3)),RHavg4 = as.numeric(as.factor(RHavg4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, RHavg1,RHavg2, RHavg3,RHavg4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("RHavg1", 'RHavg2'), #, 'RHavg4', 'RHavg5'),
+                       variable.name="Measure",
+                       value.name="RHavg")
+
+
+fit <- lmer(RHavg ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="RHavg","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+
+table. <-data.frame("Factor"="Caffeine","Measure"="RHavg","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="RHavg","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, RHavg1 = as.numeric(as.factor(RHavg1)),RHavg2 = as.numeric(as.factor(RHavg2)),RHavg3 = as.numeric(as.factor(RHavg3)),RHavg4 = as.numeric(as.factor(RHavg4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, RHavg1,RHavg2, RHavg3,RHavg4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("RHavg1", 'RHavg2'), #, 'RHavg4', 'RHavg5'),
+                       variable.name="Measure",
+                       value.name="RHavg")
+
+
+fit <- lmer(RHavg ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="RHavg","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="RHavg","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="RHavg","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, RHavg1 = as.numeric(as.factor(RHavg1)),RHavg2 = as.numeric(as.factor(RHavg2)),RHavg3 = as.numeric(as.factor(RHavg3)),RHavg4 = as.numeric(as.factor(RHavg4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, RHavg1,RHavg2, RHavg3,RHavg4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("RHavg1", 'RHavg2'), #, 'RHavg4', 'RHavg5'),
+                       variable.name="Measure",
+                       value.name="RHavg")
+
+
+fit <- lmer(RHavg ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="RHavg","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="RHavg","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="RHavg","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, RHavg1 = as.numeric(as.factor(RHavg1)),RHavg2 = as.numeric(as.factor(RHavg2)),RHavg3 = as.numeric(as.factor(RHavg3)),RHavg4 = as.numeric(as.factor(RHavg4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine), TMF=TMF.cat)
+datas <- data %>%
+  select(Subject, Caffeine,TMF, RHavg1,RHavg2, RHavg3,RHavg4) %>%
+  melt(id.vars=c("Subject","TMF",'Caffeine'),
+                       measure.vars=c("RHavg1", 'RHavg2'), #, 'RHavg4', 'RHavg5'),
+                       variable.name="Measure",
+                       value.name="RHavg")
+
+
+fit <- lmer(RHavg ~ TMF*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="RHavg","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="RHavg","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="RHavg","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+lsm <- ls_means(fit)
+plot(lsm)
+```
+
+
+
+
+
+
+LHavg
+
+```{r}
+data <- mutate(data, LHavg1 = as.numeric(as.factor(LHavg1)),LHavg2 = as.numeric(as.factor(LHavg2)),LHavg3 = as.numeric(as.factor(LHavg3)),LHavg4 = as.numeric(as.factor(LHavg4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, LHavg1,LHavg2, LHavg3,LHavg4) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("LHavg1", 'LHavg2'), #, 'LHavg4', 'LHavg5'),
+                       variable.name="Measure",
+                       value.name="LHavg")
+
+
+fit <- lmer(LHavg ~ TPE.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPE","Measure"="LHavg","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+
+table. <-data.frame("Factor"="Caffeine","Measure"="LHavg","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPExCaffeine","Measure"="LHavg","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, LHavg1 = as.numeric(as.factor(LHavg1)),LHavg2 = as.numeric(as.factor(LHavg2)),LHavg3 = as.numeric(as.factor(LHavg3)),LHavg4 = as.numeric(as.factor(LHavg4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, LHavg1,LHavg2, LHavg3,LHavg4) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("LHavg1", 'LHavg2'), #, 'LHavg4', 'LHavg5'),
+                       variable.name="Measure",
+                       value.name="LHavg")
+
+
+fit <- lmer(LHavg ~ TPF.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TPF","Measure"="LHavg","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="LHavg","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TPFxCaffeine","Measure"="LHavg","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, LHavg1 = as.numeric(as.factor(LHavg1)),LHavg2 = as.numeric(as.factor(LHavg2)),LHavg3 = as.numeric(as.factor(LHavg3)),LHavg4 = as.numeric(as.factor(LHavg4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, LHavg1,LHavg2, LHavg3,LHavg4) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("LHavg1", 'LHavg2'), #, 'LHavg4', 'LHavg5'),
+                       variable.name="Measure",
+                       value.name="LHavg")
+
+
+fit <- lmer(LHavg ~ TME.cat*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TME","Measure"="LHavg","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="LHavg","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMExCaffeine","Measure"="LHavg","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+```
+
+```{r}
+data <- mutate(data, LHavg1 = as.numeric(as.factor(LHavg1)),LHavg2 = as.numeric(as.factor(LHavg2)),LHavg3 = as.numeric(as.factor(LHavg3)),LHavg4 = as.numeric(as.factor(LHavg4)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine), TMF=TMF.cat)
+datas <- data %>%
+  select(Subject, Caffeine,TMF, LHavg1,LHavg2, LHavg3,LHavg4) %>%
+  melt(id.vars=c("Subject","TMF",'Caffeine'),
+                       measure.vars=c("LHavg1", 'LHavg2'), #, 'LHavg4', 'LHavg5'),
+                       variable.name="Measure",
+                       value.name="LHavg")
+
+
+fit <- lmer(LHavg ~ TMF*Caffeine + (1|Subject), data=datas)
+anova <-anova(fit)
+model<-summary(fit)
+model <- data.frame(model$coefficients)
+ests <-ls_means(fit)
+
+table. <-data.frame("Factor"="TMF","Measure"="LHavg","Beta"=model$Estimate[2], "Lower"=model$Estimate[2]-1.96*model$Std..Error[2], "Upper"=model$Estimate[2]+1.96*model$Std..Error[2], "t stat"=model$t.value[2], "t stat p value"=model$Pr...t..[2])
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="Caffeine","Measure"="LHavg","Beta"=model$Estimate[3], "Lower"=model$Estimate[3]-1.96*model$Std..Error[3], "Upper"=model$Estimate[3]+1.96*model$Std..Error[3], "t stat"=model$t.value[3], "t stat p value"=model$Pr...t..[3])
+
+table <- bind_rows(table,table.)
+
+table. <-data.frame("Factor"="TMFxCaffeine","Measure"="LHavg","Beta"=model$Estimate[4], "Lower"=model$Estimate[4]-1.96*model$Std..Error[4], "Upper"=model$Estimate[4]+1.96*model$Std..Error[4], "t stat"=model$t.value[4], "t stat p value"=model$Pr...t..[4])
+
+table <- bind_rows(table,table.)
+
+lsm <- ls_means(fit)
+plot(lsm)
+```
+
+
+
+
+```{r}
+table$Beta<-round(table$Beta,3)
+table$Lower<-round(table$Lower,3)
+table$Upper<-round(table$Upper,3)
+table$t.stat<-round(table$t.stat,3)
+table$t.stat.p.value<-round(table$t.stat.p.value,3)
+table
+
+
+write.table(table, file="ptcaff_results_Bev3Caff.txt", row.names=FALSE, quote=FALSE)
+```
+
+
+
+```{r, include=FALSE}
+data <- read.csv("Caffeine_Study_Fin.csv") %>% mutate(Sleep=as.numeric(Sleep))
+
+data <- data %>% mutate(Caffeine = GROUP.2,TPE.cat = cut(data$TPE, c(0,10,14)), TPF.cat = cut(data$TPF, c(0,6.5,11)), TME.cat = cut(data$TME, c(0,9,12)), TMF.cat = cut(data$TMF, c(0,6,11))) %>% select(Subject, TPE.cat, TPF.cat, TME.cat, TMF.cat, Motivation2, Motivation3, Motivation4, Motivation5, Sleep,  DeltaSub3Attempts, DeltaSub7Attempts, DeltaMotivation, DeltaCptReact, DeltaConfusion, DeltaTension, DeltaAnxiety, DeltaVigor, DeltaFatigue, DeltaDepression, CPT1ReactionTime, CPT2ReactionTime, CPT3ReactionTime, CPT4ReactionTime, Bakan1PrimaryAvgReactionTime, Bakan2PrimaryAvgReactionTime, Bakan3PrimaryAvgReactionTime, Bakan4PrimaryAvgReactionTime, Bakan1SecondaryAvgReactionTime, Bakan2SecondaryAvgReactionTime, Bakan3SecondaryAvgReactionTime, Bakan4SecondaryAvgReactionTime, Bakan1TertiaryAvgReactionTime, Bakan2TertiaryAvgReactionTime, Bakan3TertiaryAvgReactionTime, Bakan4TertiaryAvgReactionTime, GROUP., GROUP.2, GROUP.3, Beverage, v,v2,v3,v4,v5,a,a2,a3,a4,a5,c,c2,c3,c4,c5,d,d2,d3,d4,d5,f,f2,f3,f4,f5,t,t2,t3,t4,t5, PE2, PE3, PE4, PE5, ME2, ME3, ME4, ME5, mentalfatigue, Mentalenergy, physicalfatigue, Physicalenergy, X.F2, MF3, MF4, MF5, PF2, PF3, PF4, PF5, Caffeine, Sub3attempts1, Sub3numberattempt2, Sub3numberattempt3, Sub3total4, Sub7total1, Sub7total2, Sub7total3, Sub7total4, SYS1,SYS2,SYS3,SYS4,DIA1,DIA2,DIA3,DIA4,HR1,HR2,HR3,HR4,RHavg1,RHavg2,RHavg3,RHavg4, LHavg1,LHavg2,LHavg3,LHavg4,Caffeine, Caffeinepre, Caffeinepost) %>% 
+  mutate(MF2 = X.F2, ME = Mentalenergy, MF = mentalfatigue, PE = Physicalenergy, PF = physicalfatigue, Sub3total1 = Sub3attempts1, Sub3total2 = Sub3numberattempt2, Sub3total3 = Sub3numberattempt3, Caffeine1=Caffeinepre, Caffeine2=Caffeinepost) %>% filter(Beverage != 1) 
+```
+
+
+```{r}
+data <- mutate(data, Caffeine1 = as.numeric(as.factor(Caffeine1)),Caffeine2 = as.numeric(as.factor(Caffeine2)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TME.cat, Caffeine1,Caffeine2) %>%
+  melt(id.vars=c("Subject","TME.cat",'Caffeine'),
+                       measure.vars=c("Caffeine1", 'Caffeine2'), #, 'Caffeine4', 'Caffeine5'),
+                       variable.name="Measure",
+                       value.name="Caffeinex")
+
+
+fit <- lmer(Caffeinex ~ TME.cat + (1|Subject), data=datas)
+anova <-anova(fit)
+anova
+data <- mutate(data, Caffeine1 = as.numeric(as.factor(Caffeine1)),Caffeine2 = as.numeric(as.factor(Caffeine2)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPE.cat, Caffeine1,Caffeine2) %>%
+  melt(id.vars=c("Subject","TPE.cat",'Caffeine'),
+                       measure.vars=c("Caffeine1", 'Caffeine2'), #, 'Caffeine4', 'Caffeine5'),
+                       variable.name="Measure",
+                       value.name="Caffeinex")
+
+
+fit <- lmer(Caffeinex ~ TPE.cat + (1|Subject), data=datas)
+anova <-anova(fit)
+anova
+data <- mutate(data, Caffeine1 = as.numeric(as.factor(Caffeine1)),Caffeine2 = as.numeric(as.factor(Caffeine2)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TMF.cat, Caffeine1,Caffeine2) %>%
+  melt(id.vars=c("Subject","TMF.cat",'Caffeine'),
+                       measure.vars=c("Caffeine1", 'Caffeine2'), #, 'Caffeine4', 'Caffeine5'),
+                       variable.name="Measure",
+                       value.name="Caffeinex")
+
+
+fit <- lmer(Caffeinex ~ TMF.cat + (1|Subject), data=datas)
+anova <-anova(fit)
+anova
+data <- mutate(data, Caffeine1 = as.numeric(as.factor(Caffeine1)),Caffeine2 = as.numeric(as.factor(Caffeine2)), Subject = as.factor(Subject), Caffeine=as.factor(Caffeine))
+datas <- data %>%
+  select(Subject, Caffeine,TPF.cat, Caffeine1,Caffeine2) %>%
+  melt(id.vars=c("Subject","TPF.cat",'Caffeine'),
+                       measure.vars=c("Caffeine1", 'Caffeine2'), #, 'Caffeine4', 'Caffeine5'),
+                       variable.name="Measure",
+                       value.name="Caffeinex")
+
+
+fit <- lmer(Caffeinex ~ TPF.cat + (1|Subject), data=datas)
+anova <-anova(fit)
+anova
+```
+
+sleep
+
+```{r}
+t.test(data$Sleep[data$Beverage==2], data$Sleep[data$Beverage==3])
+```
